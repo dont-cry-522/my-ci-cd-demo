@@ -1,30 +1,26 @@
 name: 我的第一个CI/CD流水线
 
-on: [push]  # 每次push代码时触发
+on: [push]
+
+permissions:
+  contents: write  # 添加这行，给工作流写入权限
 
 jobs:
-  test-and-deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     
     steps:
-    # 1. 下载代码
     - name: 检出代码
       uses: actions/checkout@v3
     
-    # 2. 假装在测试（实际是检查文件）
     - name: 运行“测试”
       run: |
         echo "🚀 开始测试..."
-        if [ -f "index.html" ]; then
-          echo "✅ index.html文件存在"
-        else
-          echo "❌ 找不到index.html"
-          exit 1
-        fi
-    
-    # 3. 自动部署到GitHub Pages（免费网站托管）
+        ls -la  # 列出文件看看
+        
+    # 使用GitHub官方的Pages部署
     - name: 部署到GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
+      uses: JamesIves/github-pages-deploy-action@v4
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: .
+        branch: gh-pages  # 部署到的分支
+        folder: .  # 要部署的文件夹
