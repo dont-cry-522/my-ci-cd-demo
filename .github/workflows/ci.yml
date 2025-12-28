@@ -1,0 +1,30 @@
+name: 我的第一个CI/CD流水线
+
+on: [push]  # 每次push代码时触发
+
+jobs:
+  test-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    # 1. 下载代码
+    - name: 检出代码
+      uses: actions/checkout@v3
+    
+    # 2. 假装在测试（实际是检查文件）
+    - name: 运行“测试”
+      run: |
+        echo "🚀 开始测试..."
+        if [ -f "index.html" ]; then
+          echo "✅ index.html文件存在"
+        else
+          echo "❌ 找不到index.html"
+          exit 1
+        fi
+    
+    # 3. 自动部署到GitHub Pages（免费网站托管）
+    - name: 部署到GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: .
