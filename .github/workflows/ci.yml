@@ -1,26 +1,47 @@
-name: 我的第一个CI/CD流水线
+name: 我的CI/CD实验
 
-on: [push]
+on: [push, pull_request]
 
 permissions:
-  contents: write  # 添加这行，给工作流写入权限
+  contents: write
 
 jobs:
-  build-and-deploy:
+  test-and-deploy:
     runs-on: ubuntu-latest
     
     steps:
+    # 第一步：获取代码
     - name: 检出代码
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
     
-    - name: 运行“测试”
+    # 第二步：显示调试信息
+    - name: 显示当前文件
       run: |
-        echo "🚀 开始测试..."
-        ls -la  # 列出文件看看
-        
-    # 使用GitHub官方的Pages部署
-    - name: 部署到GitHub Pages
+        echo "📁 当前目录内容："
+        ls -la
+        echo ""
+        echo "📄 HTML文件检查："
+        if [ -f "index.html" ]; then
+          echo "✅ 找到 index.html 文件"
+          echo "文件内容前几行："
+          head -5 index.html
+        else
+          echo "❌ 错误：找不到 index.html"
+          exit 1  # 故意失败
+        fi
+    
+    # 第三步：模拟测试通过
+    - name: 测试通过庆祝
+      if: success()
+      run: |
+        echo "🎉 所有测试通过！"
+        echo "当前时间：$(date)"
+        echo "提交者：${{ github.actor }}"
+    
+    # 第四步：部署到GitHub Pages
+    - name: 部署到网站
+      if: success()
       uses: JamesIves/github-pages-deploy-action@v4
       with:
-        branch: gh-pages  # 部署到的分支
-        folder: .  # 要部署的文件夹
+        branch: gh-pages
+        folder: .
